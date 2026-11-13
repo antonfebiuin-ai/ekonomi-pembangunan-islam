@@ -3,266 +3,365 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Upload Video ke GitHub</title>
+<title>Hadis Content Creator Academy — Player</title>
 <style>
   * { box-sizing: border-box; }
   body {
-    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
-    background: #0d1117; color: #e6edf3;
-    max-width: 720px; margin: 40px auto; padding: 0 20px;
+    margin: 0; min-height: 100vh; background: #0d1117;
+    display: flex; align-items: center; justify-content: center;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif; color: #e6edf3;
+    padding: 16px;
   }
-  h1 { font-size: 1.4rem; margin-bottom: 4px; }
-  .sub { color: #8b949e; font-size: .9rem; margin-bottom: 24px; }
-  .card {
-    background: #161b22; border: 1px solid #30363d;
-    border-radius: 10px; padding: 20px; margin-bottom: 16px;
+  .wrap {
+    width: 100%; max-width: 1080px;
+    background: #000; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.6);
+    position: relative;
   }
-  label { display: block; font-size: .85rem; margin: 10px 0 4px; color: #8b949e; }
-  input, select, button {
-    width: 100%; padding: 10px 12px; border-radius: 6px;
-    border: 1px solid #30363d; background: #0d1117; color: #e6edf3;
-    font-size: .95rem;
+  video { width: 100%; display: block; background: #000; }
+
+  /* ====== Overlay loading & error ====== */
+  .overlay {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.85); color: #e6edf3;
+    font-size: .95rem; text-align: center; padding: 24px;
+    z-index: 5; transition: opacity .3s;
   }
-  input[type=file] { padding: 8px; }
-  button {
-    margin-top: 16px; background: #238636; border-color: #2ea043;
-    cursor: pointer; font-weight: 600;
+  .overlay.hidden { opacity: 0; pointer-events: none; }
+  .spinner {
+    width: 40px; height: 40px; margin-right: 14px;
+    border: 3px solid #30363d; border-top-color: #58a6ff;
+    border-radius: 50%; animation: spin .8s linear infinite;
   }
-  button:hover:not(:disabled) { background: #2ea043; }
-  button:disabled { opacity: .5; cursor: not-allowed; }
-  .progress {
-    height: 10px; background: #21262d; border-radius: 6px;
-    overflow: hidden; margin-top: 14px; display: none;
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .overlay.error { color: #f85149; flex-direction: column; }
+
+  /* ====== Custom Control Bar ====== */
+  .controls {
+    position: absolute; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,.9), rgba(0,0,0,0));
+    padding: 30px 14px 12px;
+    display: flex; flex-direction: column; gap: 8px;
+    opacity: 0; transition: opacity .25s;
+    z-index: 4;
   }
-  .progress > div {
-    height: 100%; width: 0%; background: linear-gradient(90deg,#2ea043,#3fb950);
-    transition: width .2s;
+  .wrap:hover .controls, .wrap.show-controls .controls { opacity: 1; }
+
+  /* Seek bar */
+  .seek-wrap {
+    position: relative; height: 6px;
+    background: rgba(255,255,255,.2); border-radius: 3px;
+    cursor: pointer;
   }
-  .log {
-    font-family: ui-monospace, monospace; font-size: .8rem;
-    background: #0d1117; border: 1px solid #30363d;
-    border-radius: 6px; padding: 10px; margin-top: 14px;
-    max-height: 160px; overflow-y: auto; white-space: pre-wrap;
-    display: none;
+  .seek-buffer, .seek-played {
+    position: absolute; top: 0; left: 0; bottom: 0;
+    border-radius: 3px;
   }
-  .log.ok   { color: #3fb950; }
-  .log.err  { color: #f85149; }
-  .warn { font-size: .8rem; color: #d29922; margin-top: 10px; }
-  a { color: #58a6ff; }
+  .seek-buffer { background: rgba(255,255,255,.35); }
+  .seek-played { background: #2ea043; }
+  .seek-thumb {
+    position: absolute; top: 50%; width: 14px; height: 14px;
+    margin-left: -7px; margin-top: -7px;
+    background: #fff; border-radius: 50%;
+    transform: scale(0); transition: transform .15s;
+    pointer-events: none;
+  }
+  .seek-wrap:hover .seek-thumb { transform: scale(1); }
+
+  /* Buttons row */
+  .row {
+    display: flex; align-items: center; gap: 14px;
+    color: #e6edf3; font-size: .85rem;
+  }
+  .row button {
+    background: none; border: none; color: inherit;
+    cursor: pointer; padding: 4px; display: flex;
+    align-items: center; justify-content: center;
+    border-radius: 4px;
+  }
+  .row button:hover { background: rgba(255,255,255,.1); }
+  .row button svg { width: 20px; height: 20px; fill: currentColor; }
+  .time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .spacer { flex: 1; }
+
+  /* Volume */
+  .vol-wrap { display: flex; align-items: center; gap: 6px; }
+  .vol-wrap input[type=range] {
+    width: 0; opacity: 0; transition: all .25s;
+    accent-color: #2ea043;
+  }
+  .vol-wrap:hover input[type=range],
+  .vol-wrap:focus-within input[type=range] { width: 70px; opacity: 1; }
+
+  /* Speed */
+  select.speed {
+    background: transparent; color: inherit;
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 4px; padding: 3px 6px; font-size: .8rem;
+    cursor: pointer; outline: none;
+  }
+  select.speed option { background: #161b22; }
+
+  /* Fullscreen adjustments */
+  .wrap:fullscreen { max-width: none; border-radius: 0; }
 </style>
 </head>
 <body>
 
-<h1>🚀 Upload Video ke GitHub</h1>
-<p class="sub">Unggah file video ke repository GitHub kamu via browser.</p>
+<div class="wrap" id="wrap">
+  <video
+    id="video"
+    preload="metadata"
+    playsinline
+    crossorigin="anonymous"
+    poster="">
+    <source
+      src="https://raw.githubusercontent.com/USERNAME/NAMA_REPO/main/Hadis_Content_Creator_Academy_Kode_Lengkap.mp4"
+      type="video/mp4">
+  </video>
 
-<div class="card">
-  <label>Personal Access Token (fine-grained, scope: Contents = Read & Write)</label>
-  <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+  <!-- Overlay loading / error -->
+  <div class="overlay" id="overlay">
+    <div class="spinner"></div>
+    <span>Memuat video…</span>
+  </div>
 
-  <label>Pemilik Repo (username / org)</label>
-  <input type="text" id="owner" placeholder="contoh: budi">
+  <!-- Custom Controls -->
+  <div class="controls" id="controls">
+    <div class="seek-wrap" id="seekWrap">
+      <div class="seek-buffer" id="seekBuffer"></div>
+      <div class="seek-played" id="seekPlayed"></div>
+      <div class="seek-thumb" id="seekThumb"></div>
+    </div>
 
-  <label>Nama Repo</label>
-  <input type="text" id="repo" placeholder="contoh: video-assets">
+    <div class="row">
+      <!-- Play / Pause -->
+      <button id="btnPlay" title="Play / Pause (Space)">
+        <svg viewBox="0 0 24 24" id="icoPlay"><path d="M8 5v14l11-7z"/></svg>
+        <svg viewBox="0 0 24 24" id="icoPause" style="display:none"><path d="M6 5h4v14H6zm8 0h4v14h-4z"/></svg>
+      </button>
 
-  <label>Metode Upload</label>
-  <select id="method">
-    <option value="release">Release Asset (disarankan, sampai 2 GB)</option>
-    <option value="contents">Repository File (maks ±100 MB)</option>
-  </select>
+      <!-- Time -->
+      <span class="time"><span id="cur">0:00</span> / <span id="dur">0:00</span></span>
 
-  <label id="pathLabel">Tag Release</label>
-  <input type="text" id="path" placeholder="contoh: v1.0" value="v1.0">
+      <span class="spacer"></span>
 
-  <label>File Video</label>
-  <input type="file" id="file" accept="video/*">
+      <!-- Volume -->
+      <div class="vol-wrap">
+        <button id="btnMute" title="Mute (M)">
+          <svg viewBox="0 0 24 24" id="icoVol"><path d="M3 9v6h4l5 5V4L7 9H3z"/></svg>
+          <svg viewBox="0 0 24 24" id="icoMute" style="display:none"><path d="M3 9v6h4l5 5V4L7 9H3zm13.6 3l2.7-2.7-1.4-1.4-2.7 2.7-2.7-2.7-1.4 1.4 2.7 2.7-2.7 2.7 1.4 1.4 2.7-2.7 2.7 2.7 1.4-1.4-2.7-2.7z"/></svg>
+        </button>
+        <input type="range" id="vol" min="0" max="1" step="0.01" value="1">
+      </div>
 
-  <button id="btn">Upload Video</button>
+      <!-- Speed -->
+      <select class="speed" id="speed" title="Kecepatan">
+        <option value="0.5">0.5×</option>
+        <option value="0.75">0.75×</option>
+        <option value="1" selected>1×</option>
+        <option value="1.25">1.25×</option>
+        <option value="1.5">1.5×</option>
+        <option value="2">2×</option>
+      </select>
 
-  <div class="progress" id="progressWrap"><div id="progressBar"></div></div>
-  <div class="log" id="log"></div>
+      <!-- PiP -->
+      <button id="btnPip" title="Picture-in-Picture">
+        <svg viewBox="0 0 24 24"><path d="M19 11h-8v6h8v-6zm4 8V5c0-1.1-.9-2-2-2H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2zm-2 .02H3V4.97h18v14.05z"/></svg>
+      </button>
 
-  <p class="warn">
-    ⚠️ Token hanya dipakai di browser ini dan tidak disimpan.
-    Jangan bagikan file HTML ini jika token pernah diisi & disimpan di cache.
-  </p>
+      <!-- Fullscreen -->
+      <button id="btnFs" title="Fullscreen (F)">
+        <svg viewBox="0 0 24 24" id="icoFs"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+        <svg viewBox="0 0 24 24" id="icoFsExit" style="display:none"><path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/></svg>
+      </button>
+    </div>
+  </div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
+const v         = document.getElementById('video');
+const wrap      = document.getElementById('wrap');
+const overlay   = document.getElementById('overlay');
+const seekWrap  = document.getElementById('seekWrap');
+const seekBuf   = document.getElementById('seekBuffer');
+const seekPlay  = document.getElementById('seekPlayed');
+const seekThumb = document.getElementById('seekThumb');
+const cur       = document.getElementById('cur');
+const dur       = document.getElementById('dur');
+const vol       = document.getElementById('vol');
 
-/* Ganti label input path sesuai metode */
-$('method').addEventListener('change', () => {
-  const m = $('method').value;
-  if (m === 'release') {
-    $('pathLabel').textContent = 'Tag Release';
-    $('path').placeholder = 'contoh: v1.0';
-    $('path').value = 'v1.0';
-  } else {
-    $('pathLabel').textContent = 'Path File di Repo';
-    $('path').placeholder = 'contoh: videos/demo.mp4';
-    $('path').value = 'videos/';
+const icoPlay   = document.getElementById('icoPlay');
+const icoPause  = document.getElementById('icoPause');
+const icoVol    = document.getElementById('icoVol');
+const icoMute   = document.getElementById('icoMute');
+const icoFs     = document.getElementById('icoFs');
+const icoFsExit = document.getElementById('icoFsExit');
+
+/* ---------- Utils ---------- */
+const fmt = s => {
+  if (!isFinite(s)) return '0:00';
+  s = Math.floor(s);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const x = String(s % 60).padStart(2, '0');
+  return h > 0
+    ? `${h}:${String(m).padStart(2,'0')}:${x}`
+    : `${m}:${x}`;
+};
+
+/* ---------- Loading & Error State ---------- */
+overlay.classList.remove('hidden');
+
+v.addEventListener('loadedmetadata', () => {
+  overlay.classList.add('hidden');
+  dur.textContent = fmt(v.duration);
+});
+
+v.addEventListener('waiting', () => {
+  if (!overlay.classList.contains('error')) {
+    overlay.innerHTML = '<div class="spinner"></div><span>Buffering…</span>';
+    overlay.classList.remove('hidden');
   }
 });
 
-function log(msg, cls = '') {
-  const el = $('log');
-  el.style.display = 'block';
-  el.className = 'log ' + cls;
-  el.textContent = msg;
+v.addEventListener('playing', () => {
+  if (!overlay.classList.contains('error')) overlay.classList.add('hidden');
+});
+
+v.addEventListener('canplay', () => overlay.classList.add('hidden'));
+
+v.addEventListener('error', () => {
+  overlay.classList.add('error');
+  overlay.classList.remove('hidden');
+  overlay.innerHTML = '⚠️ Gagal memuat video.<br><small>Cek URL, branch, nama file, atau pastikan repo publik.</small>';
+});
+
+/* ---------- Play / Pause ---------- */
+function updatePlayIcon() {
+  icoPlay.style.display  = v.paused ? '' : 'none';
+  icoPause.style.display = v.paused ? 'none' : '';
+}
+document.getElementById('btnPlay').onclick = () => v.paused ? v.play() : v.pause();
+v.addEventListener('play',  updatePlayIcon);
+v.addEventListener('pause', updatePlayIcon);
+updatePlayIcon();
+
+/* ---------- Seek Bar ---------- */
+let isSeeking = false;
+
+function updateProgress() {
+  if (!v.duration || isSeeking) return;
+  const p = (v.currentTime / v.duration) * 100;
+  seekPlay.style.width = p + '%';
+  seekThumb.style.left = p + '%';
+  cur.textContent = fmt(v.currentTime);
+}
+v.addEventListener('timeupdate', updateProgress);
+v.addEventListener('ended', updatePlayIcon);
+
+function updateBuffer() {
+  if (!v.buffered.length) return;
+  const end = v.buffered.end(v.buffered.length - 1);
+  seekBuf.style.width = (end / v.duration) * 100 + '%';
+}
+v.addEventListener('progress', updateBuffer);
+v.addEventListener('loadedmetadata', updateBuffer);
+
+function seekFromEvent(e) {
+  const r = seekWrap.getBoundingClientRect();
+  let x = (e.clientX - r.left) / r.width;
+  x = Math.max(0, Math.min(1, x));
+  v.currentTime = x * v.duration;
+  seekPlay.style.width = x * 100 + '%';
+  seekThumb.style.left = x * 100 + '%';
+  cur.textContent = fmt(v.currentTime);
 }
 
-function setProgress(pct) {
-  $('progressWrap').style.display = 'block';
-  $('progressBar').style.width = pct + '%';
-}
-
-/* ---------- Upload sebagai Release Asset ---------- */
-async function uploadRelease(file, owner, repo, token, tag) {
-  const headers = {
-    Authorization: `token ${token}`,
-    Accept: 'application/vnd.github+json',
+seekWrap.addEventListener('mousedown', e => {
+  isSeeking = true;
+  seekFromEvent(e);
+  const move = ev => seekFromEvent(ev);
+  const up = () => {
+    isSeeking = false;
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', up);
   };
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
+});
 
-  log('Mencari release…');
-  let release = null;
-  let res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`, { headers });
-  if (res.ok) {
-    release = await res.json();
-    log(`Release "${tag}" ditemukan (id ${release.id}).`);
-  } else {
-    log(`Release belum ada, membuat baru: ${tag}…`);
-    const cRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
-      method: 'POST',
-      headers: { ...headers, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tag_name: tag,
-        name: tag,
-        draft: false,
-        prerelease: false,
-        generate_release_notes: false,
-      }),
-    });
-    if (!cRes.ok) throw new Error('Gagal buat release: ' + await cRes.text());
-    release = await cRes.json();
-  }
-
-  log('Mengunggah asset…');
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.open(
-      'POST',
-      `https://uploads.github.com/repos/${owner}/${repo}/releases/${release.id}/assets?name=${encodeURIComponent(file.name)}`
-    );
-    xhr.setRequestHeader('Authorization', `token ${token}`);
-    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
-
-    xhr.upload.onprogress = e => {
-      if (e.lengthComputable) setProgress((e.loaded / e.total) * 100);
-    };
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        setProgress(100);
-        resolve(JSON.parse(xhr.responseText));
-      } else {
-        reject(new Error(`HTTP ${xhr.status}: ${xhr.responseText}`));
-      }
-    };
-    xhr.onerror = () => reject(new Error('Network error'));
-    xhr.send(file);
-  });
+/* ---------- Volume ---------- */
+vol.addEventListener('input', () => {
+  v.volume = parseFloat(vol.value);
+  v.muted = v.volume === 0;
+  updateVolIcon();
+});
+function updateVolIcon() {
+  const muted = v.muted || v.volume === 0;
+  icoVol.style.display  = muted ? 'none' : '';
+  icoMute.style.display = muted ? '' : 'none';
+  vol.value = muted ? 0 : v.volume;
 }
+document.getElementById('btnMute').onclick = () => {
+  v.muted = !v.muted;
+  updateVolIcon();
+};
+v.addEventListener('volumechange', updateVolIcon);
 
-/* ---------- Upload via Contents API ---------- */
-function fileToBase64(file) {
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = () => resolve(r.result.split(',')[1]);
-    r.onerror = reject;
-    r.onprogress = e => { if (e.lengthComputable) setProgress((e.loaded / e.total) * 50); };
-    r.readAsDataURL(file);
-  });
-}
+/* ---------- Speed ---------- */
+document.getElementById('speed').addEventListener('change', e => {
+  v.playbackRate = parseFloat(e.target.value);
+});
 
-async function uploadContents(file, owner, repo, token, path) {
-  log('Membaca file…');
-  const b64 = await fileToBase64(file);
+/* ---------- Fullscreen ---------- */
+document.getElementById('btnFs').onclick = () => {
+  if (!document.fullscreenElement) wrap.requestFullscreen?.();
+  else document.exitFullscreen?.();
+};
+document.addEventListener('fullscreenchange', () => {
+  const isFs = !!document.fullscreenElement;
+  icoFs.style.display     = isFs ? 'none' : '';
+  icoFsExit.style.display = isFs ? ''     : 'none';
+});
 
-  // kalau path masih berakhiran '/', tambahkan nama file
-  if (path.endsWith('/')) path += file.name;
-
-  const headers = {
-    Authorization: `token ${token}`,
-    Accept: 'application/vnd.github+json',
-    'Content-Type': 'application/json',
+/* ---------- Picture-in-Picture ---------- */
+const btnPip = document.getElementById('btnPip');
+if (document.pictureInPictureEnabled) {
+  btnPip.onclick = () => {
+    if (document.pictureInPictureElement) document.exitPictureInPicture();
+    else v.requestPictureInPicture?.();
   };
-
-  // Cek dulu apakah file sudah ada (butuh sha untuk overwrite)
-  let sha;
-  const check = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, { headers });
-  if (check.ok) {
-    const meta = await check.json();
-    sha = meta.sha;
-    log('File sudah ada, akan ditimpa (overwrite).');
-  }
-
-  log('Mengunggah ke repo…');
-  setProgress(60);
-
-  const body = {
-    message: `Upload video ${file.name}`,
-    content: b64,
-    ...(sha ? { sha } : {}),
-  };
-
-  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
-    method: 'PUT',
-    headers,
-    body: JSON.stringify(body),
-  });
-  setProgress(100);
-  if (!res.ok) throw new Error(await res.text());
-  return res.json();
+} else {
+  btnPip.style.display = 'none';
 }
 
-/* ---------- Handler Tombol ---------- */
-$('btn').addEventListener('click', async () => {
-  const token  = $('token').value.trim();
-  const owner  = $('owner').value.trim();
-  const repo   = $('repo').value.trim();
-  const method = $('method').value;
-  const path   = $('path').value.trim();
-  const file   = $('file').files[0];
-
-  if (!token || !owner || !repo || !path || !file) {
-    log('Lengkapi semua field dulu ya.', 'err'); return;
-  }
-  if (file.size > 100 * 1024 * 1024 && method === 'contents') {
-    log('File > 100 MB. Gunakan metode "Release Asset".', 'err'); return;
-  }
-
-  $('btn').disabled = true;
-  $('progressWrap').style.display = 'none';
-  setProgress(0);
-  log('Memulai…');
-
-  try {
-    let result;
-    if (method === 'release') {
-      result = await uploadRelease(file, owner, repo, token, path);
-      log(`✅ Sukses!\nAsset: ${result.name}\nURL: ${result.browser_download_url}`, 'ok');
-    } else {
-      result = await uploadContents(file, owner, repo, token, path);
-      log(`✅ Sukses!\nPath: ${result.content.path}\nURL: ${result.content.html_url}`, 'ok');
-    }
-  } catch (e) {
-    setProgress(0);
-    log('❌ Gagal:\n' + e.message, 'err');
-  } finally {
-    $('btn').disabled = false;
+/* ---------- Keyboard Shortcuts ---------- */
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+  switch (e.key.toLowerCase()) {
+    case ' ':
+    case 'k': e.preventDefault(); v.paused ? v.play() : v.pause(); break;
+    case 'arrowright': v.currentTime = Math.min(v.duration, v.currentTime + 5); break;
+    case 'arrowleft':  v.currentTime = Math.max(0, v.currentTime - 5); break;
+    case 'arrowup':    e.preventDefault(); v.volume = Math.min(1, v.volume + 0.1); break;
+    case 'arrowdown':  e.preventDefault(); v.volume = Math.max(0, v.volume - 0.1); break;
+    case 'm': v.muted = !v.muted; updateVolIcon(); break;
+    case 'f': document.getElementById('btnFs').click(); break;
   }
 });
+
+/* ---------- Auto-hide controls ---------- */
+let hideTimer;
+function showControls() {
+  wrap.classList.add('show-controls');
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => wrap.classList.remove('show-controls'), 2500);
+}
+wrap.addEventListener('mousemove', showControls);
+wrap.addEventListener('touchstart', showControls);
 </script>
+
 </body>
 </html>
