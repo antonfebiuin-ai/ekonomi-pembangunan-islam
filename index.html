@@ -21,18 +21,53 @@
 
         .container {
             background-color: white;
-            padding: 20px;
+            padding: 24px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 420px; /* diperkecil agar proporsional untuk video 9:16 */
+            max-width: 900px;
             width: 100%;
+            box-sizing: border-box;
         }
 
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 20px;
+            margin: 0 0 24px 0;
             font-size: 24px;
+        }
+
+        /* Layout dua kolom */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 340px; /* kiri fleksibel, kanan tetap untuk video 9:16 */
+            gap: 24px;
+            align-items: start;
+        }
+
+        /* Kolom narasi */
+        .narration {
+            color: #444;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+
+        .narration h2 {
+            font-size: 18px;
+            color: #222;
+            margin-top: 0;
+            margin-bottom: 12px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 8px;
+        }
+
+        .narration p {
+            margin: 0 0 12px 0;
+            text-align: justify;
+        }
+
+        /* Kolom video */
+        .video-column {
+            width: 100%;
         }
 
         .video-wrapper {
@@ -55,9 +90,21 @@
 
         .footer {
             text-align: center;
-            margin-top: 15px;
+            margin-top: 20px;
             font-size: 14px;
             color: #666;
+        }
+
+        /* Responsif: di layar kecil, tumpuk jadi satu kolom */
+        @media (max-width: 720px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .video-column {
+                max-width: 340px;
+                margin: 0 auto; /* video tetap di tengah */
+            }
         }
     </style>
 </head>
@@ -65,18 +112,41 @@
 
     <div class="container">
         <h1>Video Pembelajaran</h1>
-        
-        <!-- Bagian Video -->
-        <div class="video-wrapper">
-            <!-- 
-                src: diisi dengan nama file video yang ada di repository Anda.
-                controls: menampilkan tombol play, pause, volume, dll.
-                preload: "metadata" agar video tidak langsung mendownload full saat halaman dibuka.
-            -->
-            <video controls preload="metadata">
-                <source src="video-github-pertama.mp4" type="video/mp4">
-                Browser Anda tidak mendukung tag video HTML5.
-            </video>
+
+        <div class="content-grid">
+            <!-- Kolom 1: Narasi Video -->
+            <div class="narration">
+                <h2>Narasi Video</h2>
+                <p>
+                    Video ini membahas materi <strong>Ekonomi Pembangunan Islam</strong>,
+                    mencakup prinsip-prinsip dasar ekonomi syariah, tujuan pembangunan
+                    yang berorientasi pada kesejahteraan umat, serta penerapannya dalam
+                    kehidupan sehari-hari.
+                </p>
+                <p>
+                    Silakan tonton video di samping untuk memahami penjelasan secara
+                    utuh. Video disusun sebagai bahan pembelajaran mandiri dan dapat
+                    diakses ulang kapan saja melalui repository GitHub.
+                </p>
+                <p>
+                    <em>Ganti teks narasi ini sesuai isi video Anda.</em>
+                </p>
+            </div>
+
+            <!-- Kolom 2: Blok Pemutar Video -->
+            <div class="video-column">
+                <div class="video-wrapper">
+                    <!-- 
+                        src: diisi dengan nama file video yang ada di repository Anda.
+                        controls: menampilkan tombol play, pause, volume, dll.
+                        preload: "metadata" agar video tidak langsung mendownload full saat halaman dibuka.
+                    -->
+                    <video controls preload="metadata">
+                        <source src="video-github-pertama.mp4" type="video/mp4">
+                        Browser Anda tidak mendukung tag video HTML5.
+                    </video>
+                </div>
+            </div>
         </div>
 
         <div class="footer">
