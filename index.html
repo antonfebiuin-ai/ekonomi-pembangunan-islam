@@ -36,12 +36,35 @@
             font-size: 20px;
         }
 
-        /* Layout dua kolom */
+        /* Layout dua kolom: kiri video (lebar tetap), kanan narasi (fleksibel) */
         .content-grid {
             display: grid;
-            grid-template-columns: 1fr 340px; /* kiri fleksibel, kanan tetap untuk video 9:16 */
+            grid-template-columns: 340px 1fr; /* kiri tetap untuk video 9:16, kanan fleksibel */
             gap: 24px;
             align-items: start;
+        }
+
+        /* Kolom video */
+        .video-column {
+            width: 100%;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 177.78%; /* Rasio aspek 9:16 (9/16 x 100%) */
+            height: 0;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: #000;
+        }
+
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         /* Kolom narasi */
@@ -69,29 +92,6 @@
             color: #1a5c3a; /* aksen hijau untuk istilah kunci */
         }
 
-        /* Kolom video */
-        .video-column {
-            width: 100%;
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 177.78%; /* Rasio aspek 9:16 (9/16 x 100%) */
-            height: 0;
-            overflow: hidden;
-            border-radius: 8px;
-            background-color: #000;
-        }
-
-        .video-wrapper video {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
         .footer {
             text-align: center;
             margin-top: 20px;
@@ -99,7 +99,7 @@
             color: #666;
         }
 
-        /* Responsif: di layar kecil, tumpuk jadi satu kolom */
+        /* Responsif: di layar kecil, tumpuk jadi satu kolom (video di atas) */
         @media (max-width: 720px) {
             .content-grid {
                 grid-template-columns: 1fr;
@@ -118,7 +118,22 @@
         <h1>Tauhid, Maqashid Syariah dan Islamic Human Development Index</h1>
 
         <div class="content-grid">
-            <!-- Kolom 1: Narasi / Transkrip Video -->
+            <!-- Kolom 1 (KIRI): Blok Pemutar Video -->
+            <div class="video-column">
+                <div class="video-wrapper">
+                    <!-- 
+                        src: diisi dengan nama file video yang ada di repository Anda.
+                        controls: menampilkan tombol play, pause, volume, dll.
+                        preload: "metadata" agar video tidak langsung mendownload full saat halaman dibuka.
+                    -->
+                    <video controls preload="metadata">
+                        <source src="video-github-pertama.mp4" type="video/mp4">
+                        Browser Anda tidak mendukung tag video HTML5.
+                    </video>
+                </div>
+            </div>
+
+            <!-- Kolom 2 (KANAN): Narasi / Transkrip Video -->
             <div class="narration">
                 <h2>Transkrip Video</h2>
                 <p>
@@ -159,21 +174,6 @@
                     sebagai negara maju sampai kekayaannya terbukti melindungi keluhuran
                     jiwa dan spiritualitas warganya.
                 </p>
-            </div>
-
-            <!-- Kolom 2: Blok Pemutar Video -->
-            <div class="video-column">
-                <div class="video-wrapper">
-                    <!-- 
-                        src: diisi dengan nama file video yang ada di repository Anda.
-                        controls: menampilkan tombol play, pause, volume, dll.
-                        preload: "metadata" agar video tidak langsung mendownload full saat halaman dibuka.
-                    -->
-                    <video controls preload="metadata">
-                        <source src="video-github-pertama.mp4" type="video/mp4">
-                        Browser Anda tidak mendukung tag video HTML5.
-                    </video>
-                </div>
             </div>
         </div>
 
