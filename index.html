@@ -3,36 +3,86 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video GitHub Pertama</title>
+    <title>Video Ekonomi Pembangunan Islam</title>
     <style>
+        /* CSS untuk mempercantik tampilan */
         body {
             font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f4f4f9;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        video {
-            width: 80%;
+
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             max-width: 800px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .video-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* Rasio aspek 16:9 */
+            height: 0;
+            overflow: hidden;
             border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             background-color: #000;
+        }
+
+        .video-wrapper video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 14px;
+            color: #666;
         }
     </style>
 </head>
 <body>
 
-    <h2>Video GitHub Pertama</h2>
+    <div class="container">
+        <h1>Video Pembelajaran</h1>
+        
+        <!-- Bagian Video -->
+        <div class="video-wrapper">
+            <!-- 
+                src: diisi dengan nama file video yang ada di repository Anda.
+                controls: menampilkan tombol play, pause, volume, dll.
+                preload: "metadata" agar video tidak langsung mendownload full saat halaman dibuka.
+            -->
+            <video controls preload="metadata">
+                <source src="video-github-pertama.mp4" type="video/mp4">
+                Browser Anda tidak mendukung tag video HTML5.
+            </video>
+        </div>
 
-    <!-- Karena berada dalam satu folder yang sama, cukup panggil nama filenya langsung -->
-    <video controls preload="metadata">
-        <source src="video-github-pertma.mp4" type="video/mp4">
-        Browser Anda tidak mendukung pemutaran video HTML5.
-    </video>
+        <div class="footer">
+            <p>Ekonomi Pembangunan Islam - Repository GitHub</p>
+        </div>
+    </div>
 
 </body>
 </html>
