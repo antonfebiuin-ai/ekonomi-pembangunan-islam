@@ -36,6 +36,68 @@
             font-size: 20px;
         }
 
+        /* ===== ACCORDION ===== */
+        .accordion {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 16px;
+            background-color: #fafafa;
+        }
+
+        .accordion:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Tombol header accordion */
+        .accordion-header {
+            width: 100%;
+            background-color: #1a5c3a;
+            color: #fff;
+            border: none;
+            outline: none;
+            padding: 16px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.2s ease;
+        }
+
+        .accordion-header:hover {
+            background-color: #14472c;
+        }
+
+        .accordion-header.active {
+            background-color: #14472c;
+        }
+
+        /* Ikon panah */
+        .accordion-header .icon {
+            font-size: 14px;
+            transition: transform 0.3s ease;
+        }
+
+        .accordion-header.active .icon {
+            transform: rotate(180deg);
+        }
+
+        /* Panel isi accordion — default tertutup */
+        .accordion-panel {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease;
+            background-color: #fff;
+        }
+
+        .accordion-panel-inner {
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
         /* ===== VIDEO 1: layout dua kolom (video kiri 9:16, narasi kanan) ===== */
         .content-grid {
             display: grid;
@@ -50,7 +112,7 @@
 
         .video-wrapper {
             position: relative;
-            padding-bottom: 177.78%; /* Rasio aspek 9:16 (9/16 x 100%) */
+            padding-bottom: 177.78%; /* Rasio aspek 9:16 */
             height: 0;
             overflow: hidden;
             border-radius: 8px;
@@ -87,26 +149,13 @@
         }
 
         .narration strong {
-            color: #1a5c3a; /* aksen hijau untuk istilah kunci */
+            color: #1a5c3a;
         }
 
         /* ===== VIDEO 2: layout full-width 16:9 + narasi di bawah ===== */
-        .second-video-section {
-            margin-top: 32px;
-            padding-top: 24px;
-            border-top: 2px dashed #ddd;
-        }
-
-        .second-video-section h2 {
-            font-size: 18px;
-            color: #222;
-            margin: 0 0 16px 0;
-            text-align: center;
-        }
-
         .video-wrapper-169 {
             position: relative;
-            padding-bottom: 56.25%; /* Rasio aspek 16:9 (9/16 x 100%) */
+            padding-bottom: 56.25%; /* Rasio aspek 16:9 */
             height: 0;
             overflow: hidden;
             border-radius: 8px;
@@ -165,7 +214,11 @@
 
             .video-column {
                 max-width: 340px;
-                margin: 0 auto; /* video 1 tetap di tengah */
+                margin: 0 auto;
+            }
+
+            .accordion-panel-inner {
+                padding: 16px;
             }
         }
     </style>
@@ -175,282 +228,297 @@
     <div class="container">
         <h1>Tauhid, Maqashid Syariah dan Islamic Human Development Index</h1>
 
-        <!-- ================= VIDEO 1 (9:16) ================= -->
-        <div class="content-grid">
-            <!-- Kolom KIRI: Blok Pemutar Video 1 -->
-            <div class="video-column">
-                <div class="video-wrapper">
-                    <video controls preload="metadata">
-                        <source src="video-github-pertama.mp4" type="video/mp4">
-                        Browser Anda tidak mendukung tag video HTML5.
-                    </video>
-                </div>
-            </div>
+        <!-- ================= ACCORDION VIDEO 1 ================= -->
+        <div class="accordion">
+            <button class="accordion-header" aria-expanded="false">
+                <span>Video 1 — Tauhid, Maqashid Syariah &amp; IHDI (9:16)</span>
+                <span class="icon">▼</span>
+            </button>
+            <div class="accordion-panel">
+                <div class="accordion-panel-inner">
+                    <div class="content-grid">
+                        <!-- Kolom KIRI: Blok Pemutar Video 1 -->
+                        <div class="video-column">
+                            <div class="video-wrapper">
+                                <video controls preload="metadata">
+                                    <source src="video-github-pertama.mp4" type="video/mp4">
+                                    Browser Anda tidak mendukung tag video HTML5.
+                                </video>
+                            </div>
+                        </div>
 
-            <!-- Kolom KANAN: Narasi / Transkrip Video 1 -->
-            <div class="narration">
-                <h2>Transkrip Video</h2>
-                <p>
-                    Pernah dengar konsep <strong>Maqashid Syariah</strong> dalam pembangunan?
-                    Ini merombak total cara kita menilai kesuksesan sebuah negara. Selama ini,
-                    metrik konvensional seperti <strong>HDI</strong> cuma mengukur angka kesehatan,
-                    pendidikan, dan ekonomi material. Bayangkan sebuah negara superkaya dan
-                    berpendidikan tinggi.
-                </p>
-                <p>
-                    Tapi, masyarakatnya depresi massal, krisis moral, dan ketimpangannya tajam.
-                    Di sinilah prinsip <strong>tauhid</strong> mengubah fondasinya. Manusia dipandang
-                    sebagai pengelola amanah.
-                </p>
-                <p>
-                    Jadi, tujuan akhirnya bukan sekadar menumpuk kekayaan, melainkan mencapai
-                    <strong>falah</strong> — kesejahteraan sejati di dunia dan akhirat. Untuk mencapai
-                    falah, rancangan pembangunan harus melindungi lima dimensi fundamental:
-                    <strong>agama, jiwa, akal, keturunan, dan harta</strong>.
-                </p>
-                <p>
-                    Inilah inti dari kerangka <strong>Maqashid Syariah</strong>. Masalahnya, sistem pelacakan
-                    pemerintah akan selalu bentrok. Mereka tidak bisa mengukur perlindungan
-                    agama atau keturunan kalau mereka cuma terpaku pada indikator sekuler
-                    seperti PDB dan HDI standar.
-                </p>
-                <p>
-                    Solusi konkretnya adalah instrumen bernama <strong>IHDI</strong> atau
-                    <em>Islamic Human Development Index</em>. Matriks ini secara struktural
-                    memperluas indikator konvensional dengan memasukkan variabel keagamaan,
-                    etika, dan keadilan sosial. Sebagai perbandingan, kalau HDI sekadar
-                    menghitung durasi lamanya warga bersekolah, IHDI melangkah lebih jauh —
-                    menilai apakah sistem pendidikan tersebut berhasil membentuk karakter
-                    dan akhlak yang baik.
-                </p>
-                <p>
-                    Jadi, negara makmur dengan krisis sosial tadi tidak lagi bisa diklaim
-                    sebagai negara maju sampai kekayaannya terbukti melindungi keluhuran
-                    jiwa dan spiritualitas warganya.
-                </p>
+                        <!-- Kolom KANAN: Narasi / Transkrip Video 1 -->
+                        <div class="narration">
+                            <h2>Transkrip Video</h2>
+                            <p>
+                                Pernah dengar konsep <strong>Maqashid Syariah</strong> dalam pembangunan?
+                                Ini merombak total cara kita menilai kesuksesan sebuah negara. Selama ini,
+                                metrik konvensional seperti <strong>HDI</strong> cuma mengukur angka kesehatan,
+                                pendidikan, dan ekonomi material. Bayangkan sebuah negara superkaya dan
+                                berpendidikan tinggi.
+                            </p>
+                            <p>
+                                Tapi, masyarakatnya depresi massal, krisis moral, dan ketimpangannya tajam.
+                                Di sinilah prinsip <strong>tauhid</strong> mengubah fondasinya. Manusia dipandang
+                                sebagai pengelola amanah.
+                            </p>
+                            <p>
+                                Jadi, tujuan akhirnya bukan sekadar menumpuk kekayaan, melainkan mencapai
+                                <strong>falah</strong> — kesejahteraan sejati di dunia dan akhirat. Untuk mencapai
+                                falah, rancangan pembangunan harus melindungi lima dimensi fundamental:
+                                <strong>agama, jiwa, akal, keturunan, dan harta</strong>.
+                            </p>
+                            <p>
+                                Inilah inti dari kerangka <strong>Maqashid Syariah</strong>. Masalahnya, sistem pelacakan
+                                pemerintah akan selalu bentrok. Mereka tidak bisa mengukur perlindungan
+                                agama atau keturunan kalau mereka cuma terpaku pada indikator sekuler
+                                seperti PDB dan HDI standar.
+                            </p>
+                            <p>
+                                Solusi konkretnya adalah instrumen bernama <strong>IHDI</strong> atau
+                                <em>Islamic Human Development Index</em>. Matriks ini secara struktural
+                                memperluas indikator konvensional dengan memasukkan variabel keagamaan,
+                                etika, dan keadilan sosial. Sebagai perbandingan, kalau HDI sekadar
+                                menghitung durasi lamanya warga bersekolah, IHDI melangkah lebih jauh —
+                                menilai apakah sistem pendidikan tersebut berhasil membentuk karakter
+                                dan akhlak yang baik.
+                            </p>
+                            <p>
+                                Jadi, negara makmur dengan krisis sosial tadi tidak lagi bisa diklaim
+                                sebagai negara maju sampai kekayaannya terbukti melindungi keluhuran
+                                jiwa dan spiritualitas warganya.
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- ================= VIDEO 2 (16:9) ================= -->
-        <div class="second-video-section">
-            <h2>Video Kedua: Eksplorasi Pembangunan Lintas Generasi</h2>
+        <!-- ================= ACCORDION VIDEO 2 ================= -->
+        <div class="accordion">
+            <button class="accordion-header" aria-expanded="false">
+                <span>Video 2 — Eksplorasi Pembangunan Lintas Generasi (16:9)</span>
+                <span class="icon">▼</span>
+            </button>
+            <div class="accordion-panel">
+                <div class="accordion-panel-inner">
+                    <!-- Blok video 16:9 full-width -->
+                    <div class="video-wrapper-169">
+                        <video controls preload="metadata">
+                            <source src="video-github-kedua.mp4" type="video/mp4">
+                            Browser Anda tidak mendukung tag video HTML5.
+                        </video>
+                    </div>
 
-            <!-- Blok video 16:9 full-width -->
-            <div class="video-wrapper-169">
-                <video controls preload="metadata">
-                    <source src="Video-Github-Kedua.m4v" type="video/x-m4v">
-                    <source src="Video-Github-Kedua.m4v" type="video/mp4">
-                    Browser Anda tidak mendukung tag video HTML5.
-                </video>
-            </div>
-
-            <!-- Narasi / Transkrip Video 2 -->
-            <div class="narration-second">
-                <h3>Transkrip Video Kedua</h3>
-                <p>
-                    Pernah nggak sih kalian sejenak berhenti dan mikir? Gimana sebenarnya
-                    kita mengukur kemajuan sejati dari sebuah negara? Selama berpuluh-puluh
-                    tahun, kita ini kayaknya terlalu terpaku sama angka uang atau yang sering
-                    banget kita dengar sebagai <strong>PDB</strong>, Produk Domestik Bruto.
-                    Kalau angka PDB naik, wah kita langsung merasa sukses. Begitu angkanya
-                    turun, semua orang panik.
-                </p>
-                <p>
-                    Tapi, coba kita renungkan lagi. Apakah kesejahteraan sebuah bangsa itu
-                    benar-benar cuma soal akumulasi uang? Nah, di sesi eksplorasi kita kali
-                    ini, kita bakal membongkar habis-habisan dilema ini dan melihat bagaimana
-                    sebuah pembangunan itu harus banget melampaui <strong>PDB konvensional</strong>
-                    untuk bisa menemukan makna kemajuan yang sebenarnya. Oke, mari kita
-                    selami pertanyaan mendasar ini.
-                </p>
-                <p>
-                    Sebenarnya, pembangunan yang sukses itu bentuknya kayak gimana sih?
-                    Apakah cuma sekadar pertumbuhan ekonomi yang meroket? Atau tentang gimana
-                    masyarakatnya punya kapabilitas dan bisa mandiri? Terus, gimana dengan
-                    keadilan sosial dan kelestarian lingkungan? Atau jangan-jangan puncaknya
-                    adalah mencapai apa yang disebut <strong>falah</strong>, sebuah kesejahteraan
-                    hakiki yang utuh, baik secara material maupun spiritual? Pertanyaan ini
-                    sengaja saya lempar di awal buat menantang kita semua untuk mendefinisikan
-                    ulang apa yang selama ini sering kita anggap sebagai kesuksesan mutlak.
-                </p>
-                <p>
-                    Peta jalan kita hari ini cukup padat. Kita akan mulai dari membahas
-                    <em>makna asli pembangunan berhasil</em>, kemudian melihat
-                    <em>evolusi paradigma pembangunan</em>, dilanjut dengan
-                    <em>dialog dua lensa utama</em>, lalu <em>mengukur kesejahteraan lebih dalam</em>,
-                    membedah <em>arsitektur tata kelola pembangunan</em>, dan terakhir merumuskan
-                    <em>desain pembangunan lintas generasi</em>.
-                </p>
-                <p>
-                    <strong>Makna asli pembangunan berhasil.</strong> Sebelum kita sibuk ngomongin
-                    angka dan target, kita harus mulai dengan mempertanyakan asumsi-asumsi
-                    filosofis di baliknya. Pembangunan itu sama sekali bukan jalan tol yang
-                    lurus dan mulus. Ini lebih mirip sebuah ekosistem yang super kompleks.
-                </p>
-                <p>
-                    Di sinilah tempat bertemunya berbagai teori, nilai-nilai etis, kualitas
-                    institusi, pilihan kebijakan yang seringkali dilematis, sampai urusan
-                    nyari pembiayaan dan mikirin kelestarian alam. Jadi, tantangan sejati kita
-                    bukan cuma menghafal definisi, tapi gimana kita bisa menyintesis semua
-                    elemen ini dan mendiagnosis letak penyakit utamanya. Kita harus jeli
-                    melihat, di mana sih hambatan struktural yang paling mengikat, atau
-                    kegagalan pasar yang selama ini bikin kemajuan suatu bangsa jalan di tempat.
-                </p>
-                <p>
-                    <strong>Evolusi Paradigma Pembangunan.</strong> Nah, coba kita lihat gimana
-                    cara pandang kita soal kemajuan ini ternyata udah bergeser jauh dari masa
-                    ke masa. Perjalanan evolusinya ini kelihatan jelas banget. Dulu, di fase
-                    pertama, dunia itu nyaris cuma peduli sama yang namanya output agregat.
-                    Pokoknya produksi barang dan jasa harus digenjot terus.
-                </p>
-                <p>
-                    Terus bergeser ke fase kedua, di mana semua orang sibuk bicara soal
-                    industrialisasi, mengubah sektor tradisional ke modern. Masuk ke fase
-                    ketiga, nah, kita mulai sadar nih, kalau manusia itu bukan cuma sekadar
-                    alat produksi — mesin, kapabilitas, martabat, dan pendidikan mereka itu
-                    justru yang utama.
-                </p>
-                <p>
-                    Lalu, di fase keempat, dunia mulai panik dengan krisis iklim. Muncullah
-                    agenda keberlanjutan, atau <strong>SDGs</strong>. Dan yang paling komprehensif,
-                    diskursus ini memuncak pada fase kelima, yaitu <strong>horizon Islam</strong>.
-                </p>
-                <p>
-                    Di tahap ini, kesejahteraan gak cuma diukur dari apa yang kelihatan, tapi
-                    melalui <strong>maqashid syariah</strong>, di mana perlindungan terhadap agama,
-                    jiwa, akal, keturunan, dan harta, semuanya bermuara pada pencapaian
-                    kesejahteraan yang holistik di dunia dan akhirat.
-                </p>
-                <p>
-                    Supaya lebih tajam, di bagian ketiga ini, kita akan masuk ke
-                    <strong>dialog dua lensa utama</strong>. Kita akan mempertemukan pemikiran
-                    ekonomi kontemporer dengan prinsip-prinsip fundamental lainnya. Ini bagian
-                    yang menurut saya super menarik. Kita coba sandingkan dua cara pandang
-                    besar secara objektif.
-                </p>
-                <p>
-                    Dari lensa konvensional, tokoh seperti <strong>Todaro dan Smith</strong> sangat
-                    fokus pada transformasi ekonomi multidimensional, gimana ngatasin
-                    kemiskinan, dan betapa krusialnya membangun institusi yang kuat.
-                </p>
-                <p>
-                    Di sisi lain, kita punya lensa Islam, seperti yang dirumuskan oleh
-                    <strong>Bank Indonesia dan KNEKS</strong>. Lensa ini menawarkan pendekatan yang
-                    akarnya kuat banget di nilai-nilai <strong>tauhid</strong>, menitikberatkan pada
-                    <strong>maqashid syariah</strong>, pencapaian <strong>falah</strong>, dan mencari titik
-                    imbang antara keadilan material dan spiritual. Dua-duanya punya titik
-                    berangkat normatif yang beda, tapi kalau kita satukan, mereka justru
-                    ngasih kita gambaran yang sangat utuh tentang anatomi masyarakat.
-                </p>
-                <p>
-                    Dari perbandingan tadi, coba deh, kita renungkan <strong>4 pertanyaan kritis</strong>
-                    ini. <em>Pertama</em>, apa sih asumsi filosofis di balik teori yang lagi kita pakai?
-                    <em>Kedua</em>, pernah kepikiran nggak, kenapa sebuah strategi brilian yang sukses
-                    besar di satu negara malah berujung bencana waktu diterapkan di negara lain?
-                    <em>Ketiga</em>, siapa pihak yang sebenarnya punya wewenang untuk nentuin indikator
-                    sukses tidaknya masyarakat kita? Dan yang <em>keempat</em>, gimana nilai-nilai Islam
-                    itu secara fundamental bisa mengubah cara kita mengukur dan merancang
-                    perencanaan? Pertanyaan-pertanyaan ini mengajak kita buat nggak cuma jadi
-                    pendengar pasif, tapi ikut berpikir kritis.
-                </p>
-                <p>
-                    <strong>Mengukur kesejahteraan lebih dalam.</strong> Ingat ya, pada akhirnya,
-                    apa yang kita ukur, itulah yang akan kita rencanakan. Kalau cara pandang
-                    kita berubah, otomatis alat ukur kita juga harus dirombak. Buat ngukur
-                    distribusi kekayaan, misalnya. Kalau lensa konvensional terbiasa pakai
-                    <strong>rasio gini</strong>, lensa Islam ini memperkenalkan yang namanya
-                    <strong>had kifayah</strong>, sebuah batas kecukupan minimum yang wajib dipenuhi
-                    supaya setiap orang bisa hidup layak.
-                </p>
-                <p>
-                    Lalu soal pembangunan manusia. Kalau biasanya kita pakai <strong>HDI</strong> atau
-                    Indeks Pembangunan Manusia, ini bisa diimbangi dengan <strong>Islamic HDI</strong>
-                    atau <strong>Metrik Sibest</strong>. Metrik ini secara formal memasukkan kemiskinan
-                    material dan spiritual sekaligus ke dalam perhitungannya.
-                </p>
-                <p>
-                    Memahami perbedaan alat ukur ini tuh <em>absolutely crucial</em>, karena dari
-                    angka-angka inilah negara pada akhirnya mutusin uang pajak kita bakal
-                    dihabiskan ke mana. Tapi, tentu aja, teori dan alat ukur yang canggih ini
-                    gak akan jalan tanpa eksekusi yang benar. Makanya, kita masuk ke bagian
-                    kelima, <strong>Arsitektur Tata Kelola Pembangunan</strong>.
-                </p>
-                <p>
-                    Ini ibarat tumpuan tiga kaki yang harus banget seimbang dan dijaga
-                    hati-hati. Pembangunan pasti mandek kalau cuma ngandelin satu aktor.
-                    Kita butuh <strong>pasar</strong> untuk ngasih efisiensi, inovasi, dan insentif.
-                    Tapi, pasar yang dilepas bebas gitu aja gampang banget menciptakan monopoli
-                    dan ketimpangan. Makanya, <strong>negara</strong> harus hadir. Negara fungsinya
-                    mengoordinasikan dan menyediakan barang publik.
-                </p>
-                <p>
-                    Walaupun begitu, kita tahu sendirilah ya, negara juga rentan sama penyakit
-                    birokrasi, korupsi, atau pencarian rente ekonomi. Nah, di titik inilah kaki
-                    yang ketiga, yaitu <strong>civil society</strong> atau masyarakat sipil, bertindak
-                    sebagai penjaga gawang. Mereka yang bawa pengetahuan lokal dari akar rumput
-                    dan memaksa pasar sama negara supaya tetap akuntabel.
-                </p>
-                <p>
-                    Ketiga pilar tadi jelas bakal lumpuh kalau nggak ada duitnya, alias
-                    pembiayaan. Secara tradisional, negara biasanya ngandelin penghutan pajak,
-                    narik investasi asing langsung, atau ujung-ujungnya numpuk utang luar negeri
-                    lewat kebijakan fiskal. Nah, di sisi lain, instrumen pembiayaan Islam itu
-                    nawarin amunisi tambahan yang luar biasa.
-                </p>
-                <p>
-                    Kita nggak cuma ngomongin instrumen komersial, kayak <strong>sukuk</strong> buat
-                    bangun infrastruktur, tapi juga kekuatan raksasa dari instrumen sosial
-                    seperti <strong>zakat</strong> dan <strong>wakaf</strong>. Coba bayangin, betapa masifnya
-                    dampak yang bisa terjadi kalau dana filantropi zakat dan wakaf ini dikelola
-                    profesional dan diintegrasikan langsung sama agenda pengentasan kemiskinan
-                    nasional. Itu bakal jadi sebuah <em>game changer</em>.
-                </p>
-                <p>
-                    Ujung dari semua indikator, arsitektur, dan dana pembiayaan tadi harus
-                    bermuara pada satu visi jangka panjang. Kita bahas di bagian keenam,
-                    <strong>desain pembangunan lintas generasi</strong>. Poin krusialnya di sini adalah
-                    perencana butuh yang namanya <strong>filter strategis</strong>.
-                </p>
-                <p>
-                    Ada <strong>6 langkah</strong> yang harus dipakai. <em>Pertama</em>, kebijakan harus
-                    selaras secara prinsip dasar. <em>Kedua</em>, harus akurat merespons kebutuhan
-                    riil di lapangan. <em>Ketiga</em>, nah ini penting, harus berbasis prioritas.
-                    Mulai dari yang paling darurat atau <strong>daruriyah</strong>, baru mikirin kebutuhan
-                    sekunder dan tersier atau <strong>tahsiniyah</strong>. <em>Keempat</em>, wajib
-                    mendistribusikan manfaat secara adil. <em>Kelima</em>, selalu timbang
-                    <strong>maslahah</strong> atau manfaatnya dibanding <strong>mafsadah</strong> atau daya
-                    rusaknya. Dan <em>keenam</em>, mutlak harus berkelanjutan. Kalau 6 filter ini
-                    benar-benar dipakai, kita bisa meredam kebijakan-kebijakan yang cuma populer
-                    sesaat, tapi diam-diam merusak masa depan.
-                </p>
-                <p>
-                    Semua hal kompleks yang udah kita bahas dari tadi, pada akhirnya dirangkum
-                    dalam satu model komprehensif yang namanya <strong>IMDM</strong>, atau
-                    <em>Model Pembangunan Ekonomi Multidimensional Integratif</em>. Model ini tuh
-                    jadi bukti nyata kalau kita gak perlu kok mengorbankan pembangunan fisik
-                    cuma demi pencapaian spiritual. Begitu juga sebaliknya.
-                </p>
-                <p>
-                    IMDM membawa orientasi konsep dari atas kertas, langsung nyambung ke strategi
-                    konkret di lapangan. Ini membuktikan bahwa merancang kebijakan kesejahteraan
-                    yang utuh dan menyeluruh itu sangat mungkin buat dieksekusi secara nyata.
-                </p>
-                <p>
-                    Sebagai penutup sesi eksplorasi kita kali ini, saya mau ngajak kalian
-                    merenungkan hal ini. Ngomongin pembangunan itu, gak boleh lagi cuma berhenti
-                    di pertanyaan kelas semacam <em>berapa persen pertumbuhan ekonomi kita bulan
-                    ini?</em> Kita harus berani bertanya lebih jauh. Siapa sih kelompok yang
-                    benar-benar menikmati hasil pembangunan ini? Siapa masyarakat rentan yang
-                    justru harus nanggung biaya kerusakannya? Institusi apa yang diam-diam kita
-                    korbankan? Dan yang paling esensial, apakah kemajuan yang sering kita
-                    bangga-banggakan hari ini masih menyisakan ruang keadilan dan sumber daya
-                    buat anak cucu kita kelak? Pertanyaan ini yang harusnya jadi nyawa di setiap
-                    perencanaan pembangunan modern.
-                </p>
-                <p>
-                    Terima kasih banyak udah ikut mendalami topik krusial ini bareng-bareng.
-                    Tetaplah kritis dan sampai jumpa di eksplorasi kita selanjutnya.
-                </p>
+                    <!-- Narasi / Transkrip Video 2 -->
+                    <div class="narration-second">
+                        <h3>Transkrip Video Kedua</h3>
+                        <p>
+                            Pernah nggak sih kalian sejenak berhenti dan mikir? Gimana sebenarnya
+                            kita mengukur kemajuan sejati dari sebuah negara? Selama berpuluh-puluh
+                            tahun, kita ini kayaknya terlalu terpaku sama angka uang atau yang sering
+                            banget kita dengar sebagai <strong>PDB</strong>, Produk Domestik Bruto.
+                            Kalau angka PDB naik, wah kita langsung merasa sukses. Begitu angkanya
+                            turun, semua orang panik.
+                        </p>
+                        <p>
+                            Tapi, coba kita renungkan lagi. Apakah kesejahteraan sebuah bangsa itu
+                            benar-benar cuma soal akumulasi uang? Nah, di sesi eksplorasi kita kali
+                            ini, kita bakal membongkar habis-habisan dilema ini dan melihat bagaimana
+                            sebuah pembangunan itu harus banget melampaui <strong>PDB konvensional</strong>
+                            untuk bisa menemukan makna kemajuan yang sebenarnya. Oke, mari kita
+                            selami pertanyaan mendasar ini.
+                        </p>
+                        <p>
+                            Sebenarnya, pembangunan yang sukses itu bentuknya kayak gimana sih?
+                            Apakah cuma sekadar pertumbuhan ekonomi yang meroket? Atau tentang gimana
+                            masyarakatnya punya kapabilitas dan bisa mandiri? Terus, gimana dengan
+                            keadilan sosial dan kelestarian lingkungan? Atau jangan-jangan puncaknya
+                            adalah mencapai apa yang disebut <strong>falah</strong>, sebuah kesejahteraan
+                            hakiki yang utuh, baik secara material maupun spiritual? Pertanyaan ini
+                            sengaja saya lempar di awal buat menantang kita semua untuk mendefinisikan
+                            ulang apa yang selama ini sering kita anggap sebagai kesuksesan mutlak.
+                        </p>
+                        <p>
+                            Peta jalan kita hari ini cukup padat. Kita akan mulai dari membahas
+                            <em>makna asli pembangunan berhasil</em>, kemudian melihat
+                            <em>evolusi paradigma pembangunan</em>, dilanjut dengan
+                            <em>dialog dua lensa utama</em>, lalu <em>mengukur kesejahteraan lebih dalam</em>,
+                            membedah <em>arsitektur tata kelola pembangunan</em>, dan terakhir merumuskan
+                            <em>desain pembangunan lintas generasi</em>.
+                        </p>
+                        <p>
+                            <strong>Makna asli pembangunan berhasil.</strong> Sebelum kita sibuk ngomongin
+                            angka dan target, kita harus mulai dengan mempertanyakan asumsi-asumsi
+                            filosofis di baliknya. Pembangunan itu sama sekali bukan jalan tol yang
+                            lurus dan mulus. Ini lebih mirip sebuah ekosistem yang super kompleks.
+                        </p>
+                        <p>
+                            Di sinilah tempat bertemunya berbagai teori, nilai-nilai etis, kualitas
+                            institusi, pilihan kebijakan yang seringkali dilematis, sampai urusan
+                            nyari pembiayaan dan mikirin kelestarian alam. Jadi, tantangan sejati kita
+                            bukan cuma menghafal definisi, tapi gimana kita bisa menyintesis semua
+                            elemen ini dan mendiagnosis letak penyakit utamanya. Kita harus jeli
+                            melihat, di mana sih hambatan struktural yang paling mengikat, atau
+                            kegagalan pasar yang selama ini bikin kemajuan suatu bangsa jalan di tempat.
+                        </p>
+                        <p>
+                            <strong>Evolusi Paradigma Pembangunan.</strong> Nah, coba kita lihat gimana
+                            cara pandang kita soal kemajuan ini ternyata udah bergeser jauh dari masa
+                            ke masa. Perjalanan evolusinya ini kelihatan jelas banget. Dulu, di fase
+                            pertama, dunia itu nyaris cuma peduli sama yang namanya output agregat.
+                            Pokoknya produksi barang dan jasa harus digenjot terus.
+                        </p>
+                        <p>
+                            Terus bergeser ke fase kedua, di mana semua orang sibuk bicara soal
+                            industrialisasi, mengubah sektor tradisional ke modern. Masuk ke fase
+                            ketiga, nah, kita mulai sadar nih, kalau manusia itu bukan cuma sekadar
+                            alat produksi — mesin, kapabilitas, martabat, dan pendidikan mereka itu
+                            justru yang utama.
+                        </p>
+                        <p>
+                            Lalu, di fase keempat, dunia mulai panik dengan krisis iklim. Muncullah
+                            agenda keberlanjutan, atau <strong>SDGs</strong>. Dan yang paling komprehensif,
+                            diskursus ini memuncak pada fase kelima, yaitu <strong>horizon Islam</strong>.
+                        </p>
+                        <p>
+                            Di tahap ini, kesejahteraan gak cuma diukur dari apa yang kelihatan, tapi
+                            melalui <strong>maqashid syariah</strong>, di mana perlindungan terhadap agama,
+                            jiwa, akal, keturunan, dan harta, semuanya bermuara pada pencapaian
+                            kesejahteraan yang holistik di dunia dan akhirat.
+                        </p>
+                        <p>
+                            Supaya lebih tajam, di bagian ketiga ini, kita akan masuk ke
+                            <strong>dialog dua lensa utama</strong>. Kita akan mempertemukan pemikiran
+                            ekonomi kontemporer dengan prinsip-prinsip fundamental lainnya. Ini bagian
+                            yang menurut saya super menarik. Kita coba sandingkan dua cara pandang
+                            besar secara objektif.
+                        </p>
+                        <p>
+                            Dari lensa konvensional, tokoh seperti <strong>Todaro dan Smith</strong> sangat
+                            fokus pada transformasi ekonomi multidimensional, gimana ngatasin
+                            kemiskinan, dan betapa krusialnya membangun institusi yang kuat.
+                        </p>
+                        <p>
+                            Di sisi lain, kita punya lensa Islam, seperti yang dirumuskan oleh
+                            <strong>Bank Indonesia dan KNEKS</strong>. Lensa ini menawarkan pendekatan yang
+                            akarnya kuat banget di nilai-nilai <strong>tauhid</strong>, menitikberatkan pada
+                            <strong>maqashid syariah</strong>, pencapaian <strong>falah</strong>, dan mencari titik
+                            imbang antara keadilan material dan spiritual. Dua-duanya punya titik
+                            berangkat normatif yang beda, tapi kalau kita satukan, mereka justru
+                            ngasih kita gambaran yang sangat utuh tentang anatomi masyarakat.
+                        </p>
+                        <p>
+                            Dari perbandingan tadi, coba deh, kita renungkan <strong>4 pertanyaan kritis</strong>
+                            ini. <em>Pertama</em>, apa sih asumsi filosofis di balik teori yang lagi kita pakai?
+                            <em>Kedua</em>, pernah kepikiran nggak, kenapa sebuah strategi brilian yang sukses
+                            besar di satu negara malah berujung bencana waktu diterapkan di negara lain?
+                            <em>Ketiga</em>, siapa pihak yang sebenarnya punya wewenang untuk nentuin indikator
+                            sukses tidaknya masyarakat kita? Dan yang <em>keempat</em>, gimana nilai-nilai Islam
+                            itu secara fundamental bisa mengubah cara kita mengukur dan merancang
+                            perencanaan? Pertanyaan-pertanyaan ini mengajak kita buat nggak cuma jadi
+                            pendengar pasif, tapi ikut berpikir kritis.
+                        </p>
+                        <p>
+                            <strong>Mengukur kesejahteraan lebih dalam.</strong> Ingat ya, pada akhirnya,
+                            apa yang kita ukur, itulah yang akan kita rencanakan. Kalau cara pandang
+                            kita berubah, otomatis alat ukur kita juga harus dirombak. Buat ngukur
+                            distribusi kekayaan, misalnya. Kalau lensa konvensional terbiasa pakai
+                            <strong>rasio gini</strong>, lensa Islam ini memperkenalkan yang namanya
+                            <strong>had kifayah</strong>, sebuah batas kecukupan minimum yang wajib dipenuhi
+                            supaya setiap orang bisa hidup layak.
+                        </p>
+                        <p>
+                            Lalu soal pembangunan manusia. Kalau biasanya kita pakai <strong>HDI</strong> atau
+                            Indeks Pembangunan Manusia, ini bisa diimbangi dengan <strong>Islamic HDI</strong>
+                            atau <strong>Metrik Sibest</strong>. Metrik ini secara formal memasukkan kemiskinan
+                            material dan spiritual sekaligus ke dalam perhitungannya.
+                        </p>
+                        <p>
+                            Memahami perbedaan alat ukur ini tuh <em>absolutely crucial</em>, karena dari
+                            angka-angka inilah negara pada akhirnya mutusin uang pajak kita bakal
+                            dihabiskan ke mana. Tapi, tentu aja, teori dan alat ukur yang canggih ini
+                            gak akan jalan tanpa eksekusi yang benar. Makanya, kita masuk ke bagian
+                            kelima, <strong>Arsitektur Tata Kelola Pembangunan</strong>.
+                        </p>
+                        <p>
+                            Ini ibarat tumpuan tiga kaki yang harus banget seimbang dan dijaga
+                            hati-hati. Pembangunan pasti mandek kalau cuma ngandelin satu aktor.
+                            Kita butuh <strong>pasar</strong> untuk ngasih efisiensi, inovasi, dan insentif.
+                            Tapi, pasar yang dilepas bebas gitu aja gampang banget menciptakan monopoli
+                            dan ketimpangan. Makanya, <strong>negara</strong> harus hadir. Negara fungsinya
+                            mengoordinasikan dan menyediakan barang publik.
+                        </p>
+                        <p>
+                            Walaupun begitu, kita tahu sendirilah ya, negara juga rentan sama penyakit
+                            birokrasi, korupsi, atau pencarian rente ekonomi. Nah, di titik inilah kaki
+                            yang ketiga, yaitu <strong>civil society</strong> atau masyarakat sipil, bertindak
+                            sebagai penjaga gawang. Mereka yang bawa pengetahuan lokal dari akar rumput
+                            dan memaksa pasar sama negara supaya tetap akuntabel.
+                        </p>
+                        <p>
+                            Ketiga pilar tadi jelas bakal lumpuh kalau nggak ada duitnya, alias
+                            pembiayaan. Secara tradisional, negara biasanya ngandelin pemungutan pajak,
+                            narik investasi asing langsung, atau ujung-ujungnya numpuk utang luar negeri
+                            lewat kebijakan fiskal. Nah, di sisi lain, instrumen pembiayaan Islam itu
+                            nawarin amunisi tambahan yang luar biasa.
+                        </p>
+                        <p>
+                            Kita nggak cuma ngomongin instrumen komersial, kayak <strong>sukuk</strong> buat
+                            bangun infrastruktur, tapi juga kekuatan raksasa dari instrumen sosial
+                            seperti <strong>zakat</strong> dan <strong>wakaf</strong>. Coba bayangin, betapa masifnya
+                            dampak yang bisa terjadi kalau dana filantropi zakat dan wakaf ini dikelola
+                            profesional dan diintegrasikan langsung sama agenda pengentasan kemiskinan
+                            nasional. Itu bakal jadi sebuah <em>game changer</em>.
+                        </p>
+                        <p>
+                            Ujung dari semua indikator, arsitektur, dan dana pembiayaan tadi harus
+                            bermuara pada satu visi jangka panjang. Kita bahas di bagian keenam,
+                            <strong>desain pembangunan lintas generasi</strong>. Poin krusialnya di sini adalah
+                            perencana butuh yang namanya <strong>filter strategis</strong>.
+                        </p>
+                        <p>
+                            Ada <strong>6 langkah</strong> yang harus dipakai. <em>Pertama</em>, kebijakan harus
+                            selaras secara prinsip dasar. <em>Kedua</em>, harus akurat merespons kebutuhan
+                            riil di lapangan. <em>Ketiga</em>, nah ini penting, harus berbasis prioritas.
+                            Mulai dari yang paling darurat atau <strong>daruriyah</strong>, baru mikirin kebutuhan
+                            sekunder dan tersier atau <strong>tahsiniyah</strong>. <em>Keempat</em>, wajib
+                            mendistribusikan manfaat secara adil. <em>Kelima</em>, selalu timbang
+                            <strong>maslahah</strong> atau manfaatnya dibanding <strong>mafsadah</strong> atau daya
+                            rusaknya. Dan <em>keenam</em>, mutlak harus berkelanjutan. Kalau 6 filter ini
+                            benar-benar dipakai, kita bisa meredam kebijakan-kebijakan yang cuma populer
+                            sesaat, tapi diam-diam merusak masa depan.
+                        </p>
+                        <p>
+                            Semua hal kompleks yang udah kita bahas dari tadi, pada akhirnya dirangkum
+                            dalam satu model komprehensif yang namanya <strong>IMDM</strong>, atau
+                            <em>Model Pembangunan Ekonomi Multidimensional Integratif</em>. Model ini tuh
+                            jadi bukti nyata kalau kita gak perlu kok mengorbankan pembangunan fisik
+                            cuma demi pencapaian spiritual. Begitu juga sebaliknya.
+                        </p>
+                        <p>
+                            IMDM membawa orientasi konsep dari atas kertas, langsung nyambung ke strategi
+                            konkret di lapangan. Ini membuktikan bahwa merancang kebijakan kesejahteraan
+                            yang utuh dan menyeluruh itu sangat mungkin buat dieksekusi secara nyata.
+                        </p>
+                        <p>
+                            Sebagai penutup sesi eksplorasi kita kali ini, saya mau ngajak kalian
+                            merenungkan hal ini. Ngomongin pembangunan itu, gak boleh lagi cuma berhenti
+                            di pertanyaan kelas semacam <em>berapa persen pertumbuhan ekonomi kita bulan
+                            ini?</em> Kita harus berani bertanya lebih jauh. Siapa sih kelompok yang
+                            benar-benar menikmati hasil pembangunan ini? Siapa masyarakat rentan yang
+                            justru harus nanggung biaya kerusakannya? Institusi apa yang diam-diam kita
+                            korbankan? Dan yang paling esensial, apakah kemajuan yang sering kita
+                            bangga-banggakan hari ini masih menyisakan ruang keadilan dan sumber daya
+                            buat anak cucu kita kelak? Pertanyaan ini yang harusnya jadi nyawa di setiap
+                            perencanaan pembangunan modern.
+                        </p>
+                        <p>
+                            Terima kasih banyak udah ikut mendalami topik krusial ini bareng-bareng.
+                            Tetaplah kritis dan sampai jumpa di eksplorasi kita selanjutnya.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -458,6 +526,46 @@
             <p>Ekonomi Pembangunan Islam - Repository GitHub</p>
         </div>
     </div>
+
+    <!-- ================= JAVASCRIPT ACCORDION ================= -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var headers = document.querySelectorAll('.accordion-header');
+
+            headers.forEach(function (header) {
+                // Set initial state: semua panel tertutup
+                header.classList.remove('active');
+                header.setAttribute('aria-expanded', 'false');
+                var panel = header.nextElementSibling;
+                panel.style.maxHeight = null;
+
+                header.addEventListener('click', function () {
+                    var isOpen = header.classList.contains('active');
+                    var targetPanel = header.nextElementSibling;
+
+                    if (isOpen) {
+                        // Tutup accordion ini saja
+                        header.classList.remove('active');
+                        header.setAttribute('aria-expanded', 'false');
+                        targetPanel.style.maxHeight = null;
+                    } else {
+                        // Buka accordion ini saja — accordion lain TIDAK terpengaruh
+                        header.classList.add('active');
+                        header.setAttribute('aria-expanded', 'true');
+                        targetPanel.style.maxHeight = targetPanel.scrollHeight + 'px';
+                    }
+                });
+            });
+
+            // Recalculate max-height saat window di-resize (agar konten tidak terpotong)
+            window.addEventListener('resize', function () {
+                document.querySelectorAll('.accordion-header.active').forEach(function (header) {
+                    var panel = header.nextElementSibling;
+                    panel.style.maxHeight = panel.scrollHeight + 'px';
+                });
+            });
+        });
+    </script>
 
 </body>
 </html>
