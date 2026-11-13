@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Upload Video ke GitHub</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: #0d1117; color: #e6edf3;
+    max-width: 720px; margin: 40px auto; padding: 0 20px;
+  }
+  h1 { font-size: 1.4rem; margin-bottom: 4px; }
+  .sub { color: #8b949e; font-size: .9rem; margin-bottom: 24px; }
+  .card {
+    background: #161b22; border: 1px solid #30363d;
+    border-radius: 10px; padding: 20px; margin-bottom: 16px;
+  }
+  label { display: block; font-size: .85rem; margin: 10px 0 4px; color: #8b949e; }
+  input, select, button {
+    width: 100%; padding: 10px 12px; border-radius: 6px;
+    border: 1px solid #30363d; background: #0d1117; color: #e6edf3;
+    font-size: .95rem;
+  }
+  input[type=file] { padding: 8px; }
+  button {
+    margin-top: 16px; background: #238636; border-color: #2ea043;
+    cursor: pointer; font-weight: 600;
+  }
+  button:hover:not(:disabled) { background: #2ea043; }
+  button:disabled { opacity: .5; cursor: not-allowed; }
+  .progress {
+    height: 10px; background: #21262d; border-radius: 6px;
+    overflow: hidden; margin-top: 14px; display: none;
+  }
+  .progress > div {
+    height: 100%; width: 0%; background: linear-gradient(90deg,#2ea043,#3fb950);
+    transition: width .2s;
+  }
+  .log {
+    font-family: ui-monospace, monospace; font-size: .8rem;
+    background: #0d1117; border: 1px solid #30363d;
+    border-radius: 6px; padding: 10px; margin-top: 14px;
+    max-height: 160px; overflow-y: auto; white-space: pre-wrap;
+    display: none;
+  }
+  .log.ok   { color: #3fb950; }
+  .log.err  { color: #f85149; }
+  .warn { font-size: .8rem; color: #d29922; margin-top: 10px; }
+  a { color: #58a6ff; }
+</style>
+</head>
+<body>
+
+<h1>🚀 Upload Video ke GitHub</h1>
+<p class="sub">Unggah file video ke repository GitHub kamu via browser.</p>
+
+<div class="card">
+  <label>Personal Access Token (fine-grained, scope: Contents = Read & Write)</label>
+  <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx" autocomplete="off">
+
+  <label>Pemilik Repo (username / org)</label>
+  <input type="text" id="owner" placeholder="contoh: budi">
+
+  <label>Nama Repo</label>
+  <input type="text" id="repo" placeholder="contoh: video-assets">
+
+  <label>Metode Upload</label>
+  <select id="method">
+    <option value="release">Release Asset (disarankan, sampai 2 GB)</option>
+    <option value="contents">Repository File (maks ±100 MB)</option>
+  </select>
+
+  <label id="pathLabel">Tag Release</label>
+  <input type="text" id="path" placeholder="contoh: v1.0" value="v1.0">
+
+  <label>File Video</label>
+  <input type="file" id="file" accept="video/*">
+
+  <button id="btn">Upload Video</button>
+
+  <div class="progress" id="progressWrap"><div id="progressBar"></div></div>
+  <div class="log" id="log"></div>
+
+  <p class="warn">
+    ⚠️ Token hanya dipakai di browser ini dan tidak disimpan.
+    Jangan bagikan file HTML ini jika token pernah diisi & disimpan di cache.
+  </p>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+
+/* Ganti label input path sesuai metode */
+$('method').addEventListener('change', () => {
+  const m = $('method').value;
+  if (m === 'release') {
+    $('pathLabel').textContent = 'Tag Release';
+    $('path').placeholder = 'contoh: v1.0';
+    $('path').value = 'v1.0';
+  } else {
+    $('pathLabel').textContent = 'Path File di Repo';
+    $('path').placeholder = 'contoh: videos/demo.mp4';
+    $('path').value = 'videos/';
+  }
+});
+
+function log(msg, cls = '') {
+  const el = $('log');
+  el.style.display = 'block';
+  el.className = 'log ' + cls;
+  el.textContent = msg;
+}
+
+function setProgress(pct) {
+  $('progressWrap').style.display = 'block';
+  $('progressBar').style.width = pct + '%';
+}
+
+/* ---------- Upload sebagai Release Asset ---------- */
+async function uploadRelease(file, owner, repo, token, tag) {
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github+json',
+  };
+
+  log('Mencari release…');
+  let release = null;
+  let res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`, { headers });
+  if (res.ok) {
+    release = await res.json();
+    log(`Release "${tag}" ditemukan (id ${release.id}).`);
+  } else {
+    log(`Release belum ada, membuat baru: ${tag}…`);
+    const cRes = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases`, {
+      method: 'POST',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tag_name: tag,
+        name: tag,
+        draft: false,
+        prerelease: false,
+        generate_release_notes: false,
+      }),
+    });
+    if (!cRes.ok) throw new Error('Gagal buat release: ' + await cRes.text());
+    release = await cRes.json();
+  }
+
+  log('Mengunggah asset…');
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open(
+      'POST',
+      `https://uploads.github.com/repos/${owner}/${repo}/releases/${release.id}/assets?name=${encodeURIComponent(file.name)}`
+    );
+    xhr.setRequestHeader('Authorization', `token ${token}`);
+    xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
+
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable) setProgress((e.loaded / e.total) * 100);
+    };
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        setProgress(100);
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(new Error(`HTTP ${xhr.status}: ${xhr.responseText}`));
+      }
+    };
+    xhr.onerror = () => reject(new Error('Network error'));
+    xhr.send(file);
+  });
+}
+
+/* ---------- Upload via Contents API ---------- */
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const r = new FileReader();
+    r.onload = () => resolve(r.result.split(',')[1]);
+    r.onerror = reject;
+    r.onprogress = e => { if (e.lengthComputable) setProgress((e.loaded / e.total) * 50); };
+    r.readAsDataURL(file);
+  });
+}
+
+async function uploadContents(file, owner, repo, token, path) {
+  log('Membaca file…');
+  const b64 = await fileToBase64(file);
+
+  // kalau path masih berakhiran '/', tambahkan nama file
+  if (path.endsWith('/')) path += file.name;
+
+  const headers = {
+    Authorization: `token ${token}`,
+    Accept: 'application/vnd.github+json',
+    'Content-Type': 'application/json',
+  };
+
+  // Cek dulu apakah file sudah ada (butuh sha untuk overwrite)
+  let sha;
+  const check = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, { headers });
+  if (check.ok) {
+    const meta = await check.json();
+    sha = meta.sha;
+    log('File sudah ada, akan ditimpa (overwrite).');
+  }
+
+  log('Mengunggah ke repo…');
+  setProgress(60);
+
+  const body = {
+    message: `Upload video ${file.name}`,
+    content: b64,
+    ...(sha ? { sha } : {}),
+  };
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(path)}`, {
+    method: 'PUT',
+    headers,
+    body: JSON.stringify(body),
+  });
+  setProgress(100);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+/* ---------- Handler Tombol ---------- */
+$('btn').addEventListener('click', async () => {
+  const token  = $('token').value.trim();
+  const owner  = $('owner').value.trim();
+  const repo   = $('repo').value.trim();
+  const method = $('method').value;
+  const path   = $('path').value.trim();
+  const file   = $('file').files[0];
+
+  if (!token || !owner || !repo || !path || !file) {
+    log('Lengkapi semua field dulu ya.', 'err'); return;
+  }
+  if (file.size > 100 * 1024 * 1024 && method === 'contents') {
+    log('File > 100 MB. Gunakan metode "Release Asset".', 'err'); return;
+  }
+
+  $('btn').disabled = true;
+  $('progressWrap').style.display = 'none';
+  setProgress(0);
+  log('Memulai…');
+
+  try {
+    let result;
+    if (method === 'release') {
+      result = await uploadRelease(file, owner, repo, token, path);
+      log(`✅ Sukses!\nAsset: ${result.name}\nURL: ${result.browser_download_url}`, 'ok');
+    } else {
+      result = await uploadContents(file, owner, repo, token, path);
+      log(`✅ Sukses!\nPath: ${result.content.path}\nURL: ${result.content.html_url}`, 'ok');
+    }
+  } catch (e) {
+    setProgress(0);
+    log('❌ Gagal:\n' + e.message, 'err');
+  } finally {
+    $('btn').disabled = false;
+  }
+});
+</script>
+</body>
+</html>
